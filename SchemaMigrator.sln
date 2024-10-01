@@ -14,7 +14,7 @@ Project("{9600F408-2FEE-47E7-8CB4-C91EC393C6A1}") = "Installer", "install\Instal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaMigrator.Application", "source\SchemaMigrator.Application\SchemaMigrator.Application.csproj", "{C020B5A2-9751-4645-A8DD-CAACBA1DDD21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaCreator", "SchemaCreator\SchemaCreator.csproj", "{3AAD29B2-7DA6-4661-B741-A2A8BF729795}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaCreator", "source\SchemaCreator\SchemaCreator.csproj", "{3AAD29B2-7DA6-4661-B741-A2A8BF729795}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaMigrator.Database", "source\SchemaMigrator.Database\SchemaMigrator.Database.csproj", "{B024385C-EFD6-4E4F-AE1A-9660D3DF2F70}"
 EndProject
