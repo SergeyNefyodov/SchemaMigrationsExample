@@ -35,6 +35,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Bogus" Version="35.6.1" />
         <PackageReference Include="Nice3point.Revit.Build.Tasks" Version="1.*"/>
         <PackageReference Include="Nice3point.Revit.Toolkit" Version="$(RevitVersion).*"/>
         <PackageReference Include="Nice3point.Revit.Extensions" Version="$(RevitVersion).*"/>
@@ -44,7 +45,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Models"/>
+      <ProjectReference Include="..\SchemaMigrator.Database\SchemaMigrator.Database.csproj" />
     </ItemGroup>
 
 </Project>

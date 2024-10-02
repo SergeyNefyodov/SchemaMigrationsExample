@@ -56,4 +56,8 @@
         <Resource Include="Resources\Icons\RibbonIcon32.png"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\SchemaMigrator.EntityCreator\SchemaMigrator.EntityCreator.csproj" />
+    </ItemGroup>
+
 </Project>

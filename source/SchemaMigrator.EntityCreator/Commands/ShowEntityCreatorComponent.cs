@@ -1,11 +1,11 @@
-﻿using SchemaCreator.Views;
+﻿using SchemaMigrator.EntityCreator.Views;
 
-namespace SchemaCreator.Commands;
+namespace SchemaMigrator.EntityCreator.Commands;
 
 /// <summary>
 ///     Command entry point invoked from the Revit AddIn Application
 /// </summary>
-public class ShowWindowComponent(SchemaCreatorView view)
+public class ShowEntityCreatorComponent(EntityCreatorView view)
 {
     public void Execute()
     {

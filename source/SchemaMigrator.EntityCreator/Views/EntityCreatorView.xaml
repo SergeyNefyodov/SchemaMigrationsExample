@@ -1,0 +1,26 @@
+﻿<Window
+    x:Class="SchemaMigrator.EntityCreator.Views.EntityCreatorView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:viewModel="clr-namespace:SchemaMigrator.EntityCreator.ViewModels"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance viewModel:EntityCreatorViewModel}"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen"
+    Title="SchemaMigrator.EntityCreator"
+    Height="450"
+    Width="800">
+    <StackPanel
+        Margin="40">
+        <Button 
+            Command="{Binding SeedSchemaCommand}"
+            Margin="5"
+            Content="Seed default schema"/>
+        <Button
+            Command="{Binding MigrateSchemaCommand}"
+            Margin="5"
+            Content="Migrate schema"/>
+    </StackPanel>
+</Window>

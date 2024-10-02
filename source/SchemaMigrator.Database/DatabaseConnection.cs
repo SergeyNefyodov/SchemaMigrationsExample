@@ -6,7 +6,7 @@ namespace SchemaMigrator.Database;
 
 public sealed class DatabaseConnection(Element element, EntryKey entryKey)
 {
-    private readonly Schema _schema = entryKey switch
+    public Schema Schema = entryKey switch
     {
         EntryKey.DefaultSchema => DefaultSchema.Create(),
         EntryKey.MigratedSchema => MigratedSchema.Create(),
@@ -45,7 +45,7 @@ public sealed class DatabaseConnection(Element element, EntryKey entryKey)
     public void Save<T>(string field, T value)
     {
         if (value == null) return;
-        element.SaveEntity(_schema, value, field);
+        element.SaveEntity(Schema, value, field);
     }
 
     /// <summary>
@@ -57,6 +57,6 @@ public sealed class DatabaseConnection(Element element, EntryKey entryKey)
     [Pure]
     public T Load<T>(string field)
     {
-        return element.LoadEntity<T>(_schema, field);
+        return element.LoadEntity<T>(Schema, field);
     }
 }

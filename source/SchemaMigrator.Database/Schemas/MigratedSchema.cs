@@ -6,7 +6,7 @@ public class MigratedSchema
 {
     public static Schema Create()
     {
-        var guid = new Guid("8BF65FBD-D1A0-4CC2-8842-A2ED5975538F");
+        var guid = new Guid("7FBF03FC-8F85-4008-BC97-DD3461CE517A");
         var schema = Schema.Lookup(guid);
         if (schema is not null) return schema;
 

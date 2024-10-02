@@ -24,7 +24,7 @@ public class Application : ExternalApplication
     {
         var panel = Application.CreatePanel("Commands", "SchemaMigrator.Application");
 
-        panel.AddPushButton<StartupCommand>("Execute")
+        panel.AddPushButton<EntityCreatorCommand>("Execute")
             .SetImage("/SchemaMigrator.Application;component/Resources/Icons/RibbonIcon16.png")
             .SetLargeImage("/SchemaMigrator.Application;component/Resources/Icons/RibbonIcon32.png");
     }

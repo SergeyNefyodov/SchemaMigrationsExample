@@ -1,6 +1,10 @@
 using System.IO;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SchemaMigrator.EntityCreator.Commands;
+using SchemaMigrator.EntityCreator.ViewModels;
+using SchemaMigrator.EntityCreator.Views;
 
 namespace SchemaMigrator.Application;
 
@@ -21,6 +25,10 @@ public static class Host
             ContentRootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly()!.Location),
             DisableDefaults = true
         });
+        
+        builder.Services.AddScoped<ShowEntityCreatorComponent>();
+        builder.Services.AddScoped<EntityCreatorViewModel>();
+        builder.Services.AddScoped<EntityCreatorView>();
 
         _host = builder.Build();
         _host.Start();

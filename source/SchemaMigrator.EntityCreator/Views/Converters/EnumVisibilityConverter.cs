@@ -3,7 +3,7 @@ using System.Windows.Data;
 using System.Windows.Markup;
 using Visibility = System.Windows.Visibility;
 
-namespace SchemaCreator.Views.Converters;
+namespace SchemaMigrator.EntityCreator.Views.Converters;
 
 public class EnumVisibilityConverter<TEnum> : MarkupExtension, IValueConverter where TEnum : Enum
 {
