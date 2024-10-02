@@ -22,5 +22,9 @@
             Command="{Binding MigrateSchemaCommand}"
             Margin="5"
             Content="Migrate schema"/>
+        <Button
+            Command="{Binding DeleteSchemasCommand}"
+            Margin="5"
+            Content="Delete schemas"/>
     </StackPanel>
 </Window>

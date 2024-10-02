@@ -21,6 +21,11 @@ public static class EntitySeeder
                 connection.Save("Name", faker.Person.FirstName);
                 connection.Save("Surname", faker.Person.LastName);
             }
+
+            if (entryKey == EntryKey.MigratedSchema)
+            {
+                connection.Save("Vehicle", faker.Vehicle.Model());
+            }
         }
         transaction.Commit();
     }
