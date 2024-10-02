@@ -1,11 +1,13 @@
+using System.Reflection;
 using Autodesk.Revit.DB.ExtensibleStorage;
 using SchemaMigrator.Database.Core;
+using SchemaMigrator.Database.Models;
 
 namespace SchemaMigrator.Database.Schemas;
 
 public class DefaultSchema
 {
-    private const string Guid = "8BF65FBD-D1A0-4CC2-8842-A2ED5975538F";
+    private const string Guid = "3F166AC0-04BD-4DAE-B71D-5068E66B1A65" ;
     private const string Name = "DefaultSchema";
     public static Schema Create()
     {
@@ -30,11 +32,7 @@ public class DefaultSchema
             .SetReadAccessLevel(AccessLevel.Public)
             .SetWriteAccessLevel(AccessLevel.Public);
 
-        builder.AddSimpleField("Id", typeof(int));
-        builder.AddSimpleField("Name", typeof(string));
-        builder.AddSimpleField("Surname", typeof(string));
-
-        return builder.Finish();
+        return BuildSchema(builder, typeof(Person));
     }
 
     public static void Delete()
@@ -44,5 +42,39 @@ public class DefaultSchema
         {
             Context.ActiveDocument!.EraseSchemaAndAllEntities(schema);
         }
+    }
+
+    private static Schema BuildSchema(SchemaBuilder builder, Type type)
+    {
+        var properties = type.GetProperties();
+
+        foreach (var property in properties)
+        {
+            var propertyType = property.PropertyType;
+
+            if (propertyType.IsGenericType)
+            {
+                var genericTypeDefinition = propertyType.GetGenericTypeDefinition();
+
+                if (genericTypeDefinition == typeof(List<>))
+                {
+                    var elementType = propertyType.GetGenericArguments()[0]; 
+                    builder.AddArrayField(property.Name, elementType);
+                }
+                else if (genericTypeDefinition == typeof(Dictionary<,>))
+                {
+                    var genericArgs = propertyType.GetGenericArguments();
+                    var keyType = genericArgs[0];   
+                    var valueType = genericArgs[1]; 
+                    builder.AddMapField(property.Name, keyType, valueType);
+                }
+            }
+            else
+            {
+                builder.AddSimpleField(property.Name, propertyType);
+            }
+        }
+
+        return builder.Finish();
     }
 }

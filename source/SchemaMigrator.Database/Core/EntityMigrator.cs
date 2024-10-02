@@ -10,8 +10,6 @@ public static class EntityMigrator
     {
         var instances = Context.ActiveDocument.EnumerateInstances<FamilyInstance>().ToArray();
         //var types = Context.ActiveDocument.EnumerateTypes().ToArray();
-        //using var transaction = new Transaction(Context.ActiveDocument, "Seeding database");
-        //transaction.Start();
         foreach (var instance in instances)
         {
             MigrateElement(instance, oldSchema, newSchema);
@@ -22,7 +20,6 @@ public static class EntityMigrator
         // }
 
         Context.ActiveDocument!.EraseSchemaAndAllEntities(oldSchema);
-        //transaction.Commit();
     }
 
     private static void MigrateElement(Element element, Schema oldSchema, Schema newSchema)
