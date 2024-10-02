@@ -48,6 +48,41 @@ public sealed class DatabaseConnection(Element element, EntryKey entryKey)
         element.SaveEntity(_schema, value, field);
     }
 
+    public void SaveObject<T>(T value)
+    {
+        var objType = value.GetType();
+
+        var properties = objType.GetProperties();
+        var entity = element.GetEntity(_schema);
+        if (entity is null || entity.Schema is null || !entity.IsValidObject)
+        {
+            entity = new Entity(_schema);
+        }
+
+        foreach (var property in properties)
+        {
+            var propertyName = property.Name;
+            var propertyValue = property.GetValue(value);
+            if (propertyValue != null)
+            {
+                entity.GetType()
+                    .GetMethods().FirstOrDefault(methodInfo =>
+                    {
+                        if (methodInfo.Name != nameof(Entity.Set)) return false;
+                        var parameters = methodInfo.GetParameters();
+                        return parameters.Length == 2 &&
+                               parameters[0].ParameterType == typeof(string) &&
+                               parameters[1].ParameterType.IsGenericParameter;
+                    })!
+                    .MakeGenericMethod(property.PropertyType)
+                    .Invoke(entity, [propertyName, propertyValue]);
+            }
+        }
+
+        element.SetEntity(entity);
+    }
+
+
     /// <summary>
     /// Loads the value associated with the specified field from the database.
     /// </summary>
@@ -59,7 +94,7 @@ public sealed class DatabaseConnection(Element element, EntryKey entryKey)
     {
         return element.LoadEntity<T>(_schema, field);
     }
-    
+
     public static void Delete(EntryKey entryKey)
     {
         using var transaction = new Transaction(Context.ActiveDocument, "Delete data");

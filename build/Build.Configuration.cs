@@ -14,7 +14,7 @@
 
         InstallersMap = new()
         {
-            { Solution.Installer, Solution.SchemaMigrator }
+            { Solution.Installer, Solution.SchemaMigrator_Application }
         };
     }
 }

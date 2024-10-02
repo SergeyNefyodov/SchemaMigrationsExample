@@ -1,6 +1,7 @@
 using Bogus;
 using SchemaMigrator.Database;
 using SchemaMigrator.Database.Enums;
+using Person = SchemaMigrator.Database.Models.Person;
 
 namespace SchemaMigrator.EntityCreator.Models;
 
@@ -17,9 +18,13 @@ public static class EntitySeeder
             var connection = new DatabaseConnection(instance, entryKey);
             if (entryKey == EntryKey.DefaultSchema)
             {
-                connection.Save("Id", faker.Random.Int(0, 999));
-                connection.Save("Name", faker.Person.FirstName);
-                connection.Save("Surname", faker.Person.LastName);
+                var person = new Person()
+                {
+                    Id = faker.Random.Int(1, 1000),
+                    Name = faker.Person.FirstName,
+                    Surname = faker.Person.LastName,
+                };
+                connection.SaveObject(person);
             }
 
             if (entryKey == EntryKey.MigratedSchema)
