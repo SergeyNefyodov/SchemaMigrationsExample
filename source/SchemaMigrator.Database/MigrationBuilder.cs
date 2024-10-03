@@ -73,4 +73,9 @@ public class MigrationBuilder
         }
         return resultSchema;
     }
+
+    public Dictionary<string, Type> GetColumns()
+    {
+        return _columns;
+    }
 }

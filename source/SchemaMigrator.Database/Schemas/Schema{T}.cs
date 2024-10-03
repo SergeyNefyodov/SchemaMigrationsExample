@@ -13,7 +13,7 @@ public class Schema<T> where T : class
 
         var migrationTypes = currentAssembly.GetTypes()
             .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(Migration)))
-            .ToList();
+            .ToArray();
         
         var migrationBuilder = new MigrationBuilder();
         var lastGuid = new Guid();
