@@ -22,15 +22,15 @@ public sealed partial class EntityCreatorViewModel : ObservableObject
     [RelayCommand]
     private void DeleteSchemas()
     {
-        DatabaseConnection.Delete(EntryKey.DefaultSchema);
-        DatabaseConnection.Delete(EntryKey.MigratedSchema);
+        var connection = new DatabaseConnection<Person>(null);
+        connection.Delete();
     }
     
     [RelayCommand]
     private void ReadData()
     {
         var element = Context.ActiveDocument.EnumerateInstances<FamilyInstance>().First();
-        var connection = new DatabaseConnection(element, EntryKey.DefaultSchema);
-        var person = connection.LoadObject<Person>();
+        var connection = new DatabaseConnection<Person>(element);
+        var person = connection.LoadObject();
     }
 }

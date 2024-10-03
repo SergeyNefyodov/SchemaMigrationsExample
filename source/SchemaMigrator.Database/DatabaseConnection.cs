@@ -1,26 +1,21 @@
 using Autodesk.Revit.DB.ExtensibleStorage;
-using SchemaMigrator.Database.Enums;
+using SchemaMigrator.Database.Core;
 using SchemaMigrator.Database.Schemas;
 
 namespace SchemaMigrator.Database;
 
-public sealed class DatabaseConnection(Element element, EntryKey entryKey)
+public sealed class DatabaseConnection<T>(Element? element) where T : class, new()
 {
-    private readonly Schema _schema = entryKey switch
-    {
-        EntryKey.DefaultSchema => DefaultSchema.Create(),
-        EntryKey.MigratedSchema => MigratedSchema.Create(),
-        _ => throw new ArgumentOutOfRangeException(nameof(entryKey), entryKey, null)
-    };
+    private readonly Schema _schema = new Schema<T>().Create();
 
-    private Transaction _transaction;
+    private Transaction? _transaction;
 
     /// <summary>
     ///     Begins a new transaction for database operations.
     /// </summary>
     public void BeginTransaction()
     {
-        _transaction = new Transaction(element.Document, "Save data");
+        _transaction = new Transaction(element?.Document, "Save data");
         _transaction.Start();
     }
 
@@ -30,26 +25,17 @@ public sealed class DatabaseConnection(Element element, EntryKey entryKey)
     public void Close()
     {
         if (_transaction is null) return;
-        if (!_transaction.IsValidObject) throw new ObjectDisposedException(nameof(DatabaseConnection), "Attempting to close an already closed connection");
+        if (!_transaction.IsValidObject) throw new ObjectDisposedException(nameof(Transaction), "Attempting to close an already closed connection");
 
         _transaction.Commit();
         _transaction.Dispose();
     }
 
-    /// <summary>
-    ///     Saves the specified value associated with a field in the database.
-    /// </summary>
-    /// <typeparam name="T">The type of the value to be saved.</typeparam>
-    /// <param name="field">The field name in which to save the value.</param>
-    /// <param name="value">The value to be saved.</param>
-    public void Save<T>(string field, T value)
+    public void SaveObject(T value)
     {
-        if (value == null) return;
-        element.SaveEntity(_schema, value, field);
-    }
-
-    public void SaveObject<T>(T value)
-    {
+        if (element is null)
+            throw new ArgumentNullException(nameof(element));
+        
         var objType = value.GetType();
 
         var properties = objType.GetProperties();
@@ -101,8 +87,11 @@ public sealed class DatabaseConnection(Element element, EntryKey entryKey)
         element.SetEntity(entity);
     }
 
-    public T LoadObject<T>() where T : new()
+    public T LoadObject()
     {
+        if (element is null)
+            throw new ArgumentNullException(nameof(element));
+        
         var entity = element.GetEntity(_schema);
         var obj = new T();
         var objType = typeof(T);
@@ -146,32 +135,15 @@ public sealed class DatabaseConnection(Element element, EntryKey entryKey)
         return obj;
     }
 
-
-    /// <summary>
-    /// Loads the value associated with the specified field from the database.
-    /// </summary>
-    /// <typeparam name="T">The type of the value to be loaded.</typeparam>
-    /// <param name="field">The field name from which to load the value.</param>
-    /// <returns>The value loaded from the database.</returns>
-    [Pure]
-    public T Load<T>(string field)
-    {
-        return element.LoadEntity<T>(_schema, field);
-    }
-
-    public static void Delete(EntryKey entryKey)
+    public void Delete()
     {
         using var transaction = new Transaction(Context.ActiveDocument, "Delete data");
         transaction.Start();
-        switch (entryKey)
+        foreach (var entityElement in SchemaUtils.GetSchemaElements(_schema, Context.ActiveDocument!))
         {
-            case EntryKey.DefaultSchema:
-                DefaultSchema.Delete();
-                break;
-            case EntryKey.MigratedSchema:
-                MigratedSchema.Delete();
-                break;
+            entityElement.DeleteEntity(_schema);
         }
+        Context.ActiveDocument!.EraseSchemaAndAllEntities(_schema);
 
         transaction.Commit();
     }

@@ -1,39 +1,37 @@
+using System.Reflection;
 using Autodesk.Revit.DB.ExtensibleStorage;
-using SchemaMigrator.Database.Core;
 
 namespace SchemaMigrator.Database.Schemas;
 
 public class Schema<T> where T : class
 {
-    public string Name { get; set; }
-    public string Documentation { get; set; }
-    public string VendorId { get; set; }
-    public string Guid { get; set; }
+    public string Guid { get; set; } = "CBF9A9D4-1CD4-46DF-B1DB-EF4C49713C1D";
 
     public Schema Create()
     {
-        var guid = new Guid(Guid);
-        var schema = Schema.Lookup(guid);
-        if (schema is not null)
+        var currentAssembly = Assembly.GetExecutingAssembly();
+
+        var migrationTypes = currentAssembly.GetTypes()
+            .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(Migration)))
+            .ToList();
+        
+        var migrationBuilder = new MigrationBuilder();
+        var lastGuid = new Guid();
+
+        foreach (var migrationType in migrationTypes)
         {
-            if (!SchemaUtils.HasElements(schema, Context.ActiveDocument))
+            var migrationInstance = (Migration)Activator.CreateInstance(migrationType);
+
+            if (migrationInstance is not null)
             {
-                Context.ActiveDocument!.EraseSchemaAndAllEntities(schema);
-            }
-            else
-            {
-                return schema;
+                migrationInstance.Up(migrationBuilder);
+                lastGuid = migrationInstance.VersionGuid;
             }
         }
+        var schema = Schema.Lookup(lastGuid);
+        if (schema is not null) return schema;
 
-        var builder = new SchemaBuilder(guid)
-            .SetSchemaName(Name)
-            .SetDocumentation(Documentation)
-            .SetVendorId(VendorId)
-            .SetReadAccessLevel(AccessLevel.Public)
-            .SetWriteAccessLevel(AccessLevel.Public);
-
-        return BuildSchema(builder, typeof(T));
+        return migrationBuilder.Migrate();
     }
 
     public void Delete()

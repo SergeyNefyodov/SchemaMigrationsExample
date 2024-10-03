@@ -15,26 +15,18 @@ public static class EntitySeeder
         var faker = new Faker();
         foreach (var instance in instances)
         {
-            var connection = new DatabaseConnection(instance, entryKey);
-            if (entryKey == EntryKey.DefaultSchema)
+            var connection = new DatabaseConnection<Person>(instance);
+            var person = new Person
             {
-                var person = new Person()
-                {
-                    Id = faker.Random.Int(1, 1000),
-                    Name = faker.Person.FirstName,
-                    Surname = faker.Person.LastName,
-                };
-                person.Scores.Add("Score", 1);
-                person.Hobbies.Add("Hobbyhorsing");
-                connection.SaveObject(person);
-            }
-
-            if (entryKey == EntryKey.MigratedSchema)
-            {
-                connection.Save("Vehicle", faker.Vehicle.Model());
-            }
+                Id = faker.Random.Int(1, 1000),
+                Name = faker.Person.FirstName,
+                Surname = faker.Person.LastName,
+            };
+            person.Scores.Add("Score", 1);
+            person.Hobbies.Add("Hobbyhorsing");
+            connection.SaveObject(person);
         }
+
         transaction.Commit();
     }
-    
 }

@@ -1,6 +1,5 @@
 using System.Reflection;
 using Autodesk.Revit.DB.ExtensibleStorage;
-using SchemaMigrator.Database.Enums;
 
 namespace SchemaMigrator.Database.Core;
 
@@ -9,7 +8,6 @@ public static class EntityMigrator
     public static void Migrate(Schema oldSchema, Schema newSchema)
     {
         var instances = Context.ActiveDocument.EnumerateInstances<FamilyInstance>().ToArray();
-        //var types = Context.ActiveDocument.EnumerateTypes().ToArray();
         foreach (var instance in instances)
         {
             MigrateElement(instance, oldSchema, newSchema);
