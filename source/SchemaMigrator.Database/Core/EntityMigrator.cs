@@ -27,22 +27,6 @@ public static class EntityMigrator
             return;
 
         var secondEntity = new Entity(newSchema);
-        var newFields = newSchema.ListFields();
-        var firstField = newFields.First();
-        var firstFieldValueType = firstField.ValueType;
-        var defaultSetMethod = secondEntity.GetType().GetMethods().FirstOrDefault(methodInfo =>
-        {
-            if (methodInfo.Name != nameof(Entity.Set)) return false;
-            var parameters = methodInfo.GetParameters();
-            return parameters.Length == 2 &&
-                   parameters[0].ParameterType == typeof(string) &&
-                   parameters[1].ParameterType.IsGenericParameter; 
-        })!;
-        var genericDefaultSetMethod = defaultSetMethod.MakeGenericMethod(firstFieldValueType);
-        var defaultValue = Activator.CreateInstance(firstFieldValueType);
-        genericDefaultSetMethod.Invoke(secondEntity, [firstField.FieldName, defaultValue]);
-        element.SetEntity(secondEntity);
-        element.Document.Regenerate();
 
         var oldFields = oldSchema.ListFields();
         foreach (var field in oldFields)
@@ -54,16 +38,14 @@ public static class EntityMigrator
                 var parameters = methodInfo.GetParameters();
                 return parameters.Length == 2 &&
                        parameters[0].ParameterType == typeof(string) &&
-                       parameters[1].ParameterType.IsGenericParameter; // FieldType is generic
+                       parameters[1].ParameterType.IsGenericParameter;
             })!;
-            var genericSetMethod = setMethod.MakeGenericMethod(field.ValueType);
+            var genericSetMethod = MakeGenericInvoker(field, setMethod);
             var genericGetMethod = MakeGenericInvoker(field, getMethod);
             var value = genericGetMethod.Invoke(firstEntity, [field]);
             genericSetMethod.Invoke(secondEntity, [field.FieldName, value]);
         }
 
-        var a = secondEntity.Get<string>("Name");
-        var b = firstEntity.Get<string>("Name");
         element.SetEntity(secondEntity);
         element.DeleteEntity(firstEntity.Schema);
     }

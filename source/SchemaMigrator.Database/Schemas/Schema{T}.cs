@@ -17,6 +17,7 @@ public class Schema<T> where T : class
         
         var migrationBuilder = new MigrationBuilder();
         var lastGuid = new Guid();
+        var lastExistedGuid = new Guid();
 
         foreach (var migrationType in migrationTypes)
         {
@@ -27,11 +28,16 @@ public class Schema<T> where T : class
                 migrationInstance.Up(migrationBuilder);
                 lastGuid = migrationInstance.VersionGuid;
             }
+
+            if (Schema.Lookup(lastGuid) is not null)
+            {
+                lastExistedGuid = lastGuid;
+            }
         }
         var schema = Schema.Lookup(lastGuid);
         if (schema is not null) return schema;
 
-        return migrationBuilder.Migrate();
+        return migrationBuilder.Migrate(lastExistedGuid);
     }
 
     public void Delete()
