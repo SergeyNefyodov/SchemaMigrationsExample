@@ -65,7 +65,8 @@ public sealed class DatabaseConnection(Element element, EntryKey entryKey)
             var propertyValue = property.GetValue(value);
             if (propertyValue != null)
             {
-                entity.GetType()
+                var propertyType = property.PropertyType;
+                var method = entity.GetType()
                     .GetMethods().FirstOrDefault(methodInfo =>
                     {
                         if (methodInfo.Name != nameof(Entity.Set)) return false;
@@ -73,9 +74,29 @@ public sealed class DatabaseConnection(Element element, EntryKey entryKey)
                         return parameters.Length == 2 &&
                                parameters[0].ParameterType == typeof(string) &&
                                parameters[1].ParameterType.IsGenericParameter;
-                    })!
-                    .MakeGenericMethod(property.PropertyType)
-                    .Invoke(entity, [propertyName, propertyValue]);
+                    })!;
+
+                var containerType = propertyType;
+
+                if (propertyType.IsGenericType)
+                {
+                    var genericTypeDefinition = propertyType.GetGenericTypeDefinition();
+
+                    if (genericTypeDefinition == typeof(List<>))
+                    {
+                        var elementType = propertyType.GetGenericArguments()[0];
+                        containerType = typeof(IList<>).MakeGenericType(elementType);
+                    }
+                    else if (genericTypeDefinition == typeof(Dictionary<,>))
+                    {
+                        var genericArgs = propertyType.GetGenericArguments();
+                        var keyType = genericArgs[0];
+                        var valueType = genericArgs[1];
+                        containerType = typeof(IDictionary<,>).MakeGenericType(keyType, valueType);
+                    }
+                }
+
+                method.MakeGenericMethod(containerType).Invoke(entity, [propertyName, propertyValue]);
             }
         }
 

@@ -24,6 +24,8 @@ public static class EntitySeeder
                     Name = faker.Person.FirstName,
                     Surname = faker.Person.LastName,
                 };
+                person.Scores.Add("Score", 1);
+                person.Hobbies.Add("Hobbyhorsing");
                 connection.SaveObject(person);
             }
 
