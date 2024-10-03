@@ -76,8 +76,6 @@ public sealed class DatabaseConnection(Element element, EntryKey entryKey)
                                parameters[1].ParameterType.IsGenericParameter;
                     })!;
 
-                var containerType = propertyType;
-
                 if (propertyType.IsGenericType)
                 {
                     var genericTypeDefinition = propertyType.GetGenericTypeDefinition();
@@ -85,22 +83,67 @@ public sealed class DatabaseConnection(Element element, EntryKey entryKey)
                     if (genericTypeDefinition == typeof(List<>))
                     {
                         var elementType = propertyType.GetGenericArguments()[0];
-                        containerType = typeof(IList<>).MakeGenericType(elementType);
+                        propertyType = typeof(IList<>).MakeGenericType(elementType);
                     }
                     else if (genericTypeDefinition == typeof(Dictionary<,>))
                     {
                         var genericArgs = propertyType.GetGenericArguments();
                         var keyType = genericArgs[0];
                         var valueType = genericArgs[1];
-                        containerType = typeof(IDictionary<,>).MakeGenericType(keyType, valueType);
+                        propertyType = typeof(IDictionary<,>).MakeGenericType(keyType, valueType);
                     }
                 }
 
-                method.MakeGenericMethod(containerType).Invoke(entity, [propertyName, propertyValue]);
+                method.MakeGenericMethod(propertyType).Invoke(entity, [propertyName, propertyValue]);
             }
         }
 
         element.SetEntity(entity);
+    }
+
+    public T LoadObject<T>() where T : new()
+    {
+        var entity = element.GetEntity(_schema);
+        var obj = new T();
+        var objType = typeof(T);
+
+        var properties = objType.GetProperties();
+        var method = typeof(Entity).GetMethods().FirstOrDefault(methodInfo =>
+        {
+            if (methodInfo.Name != nameof(Entity.Get)) return false;
+            var parameters = methodInfo.GetParameters();
+            return parameters.Length == 1 &&
+                   parameters[0].ParameterType == typeof(string);
+        })!;
+
+        foreach (var property in properties)
+        {
+            var propertyType = property.PropertyType;
+
+            if (propertyType.IsGenericType)
+            {
+                if (propertyType.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    var elementType = propertyType.GetGenericArguments()[0];
+                    propertyType = typeof(IList<>).MakeGenericType(elementType);
+                }
+                else if (propertyType.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+                {
+                    var genericArgs = propertyType.GetGenericArguments();
+                    var keyType = genericArgs[0];
+                    var valueType = genericArgs[1];
+                    propertyType = typeof(IDictionary<,>).MakeGenericType(keyType, valueType);
+                }
+            }
+
+            var value = method
+                .MakeGenericMethod(propertyType)
+                .Invoke(entity, [property.Name]);
+
+            property.SetValue(obj, value);
+        }
+
+        return obj;
     }
 
 
