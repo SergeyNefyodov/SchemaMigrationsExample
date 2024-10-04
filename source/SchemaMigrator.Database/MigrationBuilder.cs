@@ -1,18 +1,19 @@
 using Autodesk.Revit.DB.ExtensibleStorage;
 using SchemaMigrator.Database.Core;
+using SchemaMigrator.Database.Core.Models;
 using SchemaMigrator.Database.Schemas;
 
 namespace SchemaMigrator.Database;
 
 public class MigrationBuilder
 {
-    private Dictionary<string, Type> _columns = [];
+    private List<SchemaDescriptor> _schemas = [];
     private List<SchemaBuilderData> _buildersData = [];
     
-    public void CreateSchema(SchemaBuilderData data, Dictionary<string, Type> fields)
+    public void CreateSchema(SchemaBuilderData data, SchemaDescriptor descriptor)
     {
         _buildersData.Add(data);
-        _columns = fields;
+        _schemas.Add(descriptor);
     }
 
     public void UpdateGuid(string schemaName, Guid newGuid)
@@ -20,62 +21,69 @@ public class MigrationBuilder
         _buildersData.First(x => x.Name == schemaName).Guid = newGuid;
     }
 
-    public void AddColumn(string name, Type fieldType)
+    public void AddColumn(string tableName, string name, Type fieldType)
     {
-        _columns.Add(name, fieldType);
+        _schemas.First(schema => schema.SchemaName == tableName).AddField(new FieldDescriptor(name, fieldType));
     }
     
-    public void DropColumn(string name)
+    public void DropColumn(string tableName, string name)
     {
-        _columns.Remove(name);
+        _schemas.First(schema => schema.SchemaName == tableName).RemoveField(name);
     }
 
-    public Schema Migrate(Guid lastExistedGuid)
+    public List<Schema> Migrate(Dictionary<string, Guid> lastExistedGuids)
     {
-        var existingSchema = Schema.Lookup(lastExistedGuid);
-        
-        var builder = new SchemaBuilder(_buildersData[0].Guid)
-            .SetSchemaName(_buildersData[0].Name)
-            .SetDocumentation(_buildersData[0].Documentation)
-            .SetVendorId(_buildersData[0].VendorId);
-        
-        foreach (var pair in _columns)
+        var result = new List<Schema>();
+        foreach (var guidPair in lastExistedGuids)
         {
-            var propertyType = pair.Value;
-
-            if (propertyType.IsGenericType)
+            var existingSchema = Schema.Lookup(guidPair.Value);
+            var data = _buildersData.First(data => data.Name == guidPair.Key);
+            var schemaDescriptor = _schemas.First(schema => schema.SchemaName == guidPair.Key);
+        
+            var builder = new SchemaBuilder(data.Guid)
+                .SetSchemaName(data.Name)
+                .SetDocumentation(data.Documentation)
+                .SetVendorId(data.VendorId);
+        
+            foreach (var field in schemaDescriptor.Fields)
             {
-                var genericTypeDefinition = propertyType.GetGenericTypeDefinition();
+                var propertyType = field.Type;
 
-                if (genericTypeDefinition == typeof(List<>))
+                if (propertyType.IsGenericType)
                 {
-                    var elementType = propertyType.GetGenericArguments()[0]; 
-                    builder.AddArrayField(pair.Key, elementType);
+                    var genericTypeDefinition = propertyType.GetGenericTypeDefinition();
+
+                    if (genericTypeDefinition == typeof(List<>))
+                    {
+                        var elementType = propertyType.GetGenericArguments()[0]; 
+                        builder.AddArrayField(field.Name, elementType);
+                    }
+                    else if (genericTypeDefinition == typeof(Dictionary<,>))
+                    {
+                        var genericArgs = propertyType.GetGenericArguments();
+                        var keyType = genericArgs[0];   
+                        var valueType = genericArgs[1]; 
+                        builder.AddMapField(field.Name, keyType, valueType);
+                    }
                 }
-                else if (genericTypeDefinition == typeof(Dictionary<,>))
+                else
                 {
-                    var genericArgs = propertyType.GetGenericArguments();
-                    var keyType = genericArgs[0];   
-                    var valueType = genericArgs[1]; 
-                    builder.AddMapField(pair.Key, keyType, valueType);
+                    builder.AddSimpleField(field.Name, propertyType);
                 }
             }
-            else
-            {
-                builder.AddSimpleField(pair.Key, propertyType);
-            }
-        }
 
-        var resultSchema = builder.Finish();
-        if (existingSchema is not null && SchemaUtils.HasElements(existingSchema, Context.ActiveDocument!))
-        {
-            EntityMigrator.Migrate(existingSchema, resultSchema);
+            var resultSchema = builder.Finish();
+            if (existingSchema is not null && SchemaUtils.HasElements(existingSchema, Context.ActiveDocument!))
+            {
+                EntityMigrator.Migrate(existingSchema, resultSchema);
+            }
+            result.Add(resultSchema);
         }
-        return resultSchema;
+        return result;
     }
 
-    public Dictionary<string, Type> GetColumns()
+    public List<FieldDescriptor> GetColumns(string tableName)
     {
-        return _columns;
+        return _schemas.First(schema => schema.SchemaName == tableName).Fields;
     }
 }

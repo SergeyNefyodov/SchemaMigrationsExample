@@ -16,7 +16,7 @@ using SchemaMigrator.Database.Schemas;
 namespace {schemaSetType.Namespace}.Migrations;
         public class {migrationName} : Migration
         {{
-            public override Guid VersionGuid {{ get; set; }} = Guid.NewGuid();
+            public override Guid VersionGuid {{ get; set; }} = new Guid(""{Guid.NewGuid()}"");
 
             public override void Up(MigrationBuilder migrationBuilder)
             {{
@@ -63,7 +63,7 @@ using SchemaMigrator.Database.Schemas;
 namespace {schemaSetType.Namespace}.Migrations;
         public class {migrationName} : Migration
         {{
-            public override Guid VersionGuid {{ get; set; }} = Guid.NewGuid();
+            public override Guid VersionGuid {{ get; set; }} = new Guid(""{Guid.NewGuid()}"");
 
             public override void Up(MigrationBuilder migrationBuilder)
             {{

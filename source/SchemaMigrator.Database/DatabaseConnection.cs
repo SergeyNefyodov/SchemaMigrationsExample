@@ -4,7 +4,8 @@ using SchemaMigrator.Database.Schemas;
 
 namespace SchemaMigrator.Database;
 
-public sealed class DatabaseConnection<T>(Element? element) where T : class, new()
+public sealed class DatabaseConnection<T>(Element? element)
+    where T : class, new()
 {
     private readonly Schema _schema = new Schema<T>().Create();
 

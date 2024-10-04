@@ -6,6 +6,7 @@ public class MigrationTool
 {
     public static void AddMigration(string migrationName, Type type)
     {
+        var a = FindModelTypes();
         var lastMigrationSnapshot = GetLastMigrationSnapshot(type);
 
         if (!lastMigrationSnapshot.Any())
@@ -46,5 +47,20 @@ public class MigrationTool
             .ToArray();
 
         return migrationTypes;
+    }
+    
+    private static List<Type> FindModelTypes()
+    {
+        var types = new List<Type>();
+        var contextType = typeof(SchemaContext);
+        var propertyInfos = contextType
+            .GetProperties()
+            .Where(property => property.PropertyType.GetGenericTypeDefinition() == typeof(SchemaSet<>));
+
+        foreach (var propertyInfo in propertyInfos)
+        {
+            types.Add(propertyInfo.PropertyType.GetGenericArguments()[0]);
+        }
+        return types;
     }
 }
