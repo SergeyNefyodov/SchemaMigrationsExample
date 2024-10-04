@@ -1,4 +1,4 @@
-namespace SchemaMigrator.Database.MigrationTool;
+namespace ConsoleMigrationTool.MigrationTool;
 
 public static class ChangeDetector
 {
@@ -12,11 +12,22 @@ public static class ChangeDetector
         {
             if (!lastSnapshot.TryGetValue(pair.Key, out var value))
             {
-                changes.Add($"AddColumn({pair.Key}, {pair.Value.Name})");
+                var type = pair.Value;
+                if (type.IsGenericType)
+                {
+                    var genericTypeName = type.GetGenericTypeDefinition().Name;
+                    var genericArguments = string.Join(", ", type.GetGenericArguments().Select(t => t.Name));
+                    var fullTypeName = $"{genericTypeName.Substring(0, genericTypeName.IndexOf('`'))}<{genericArguments}>";
+                    changes.Add( $"AddColumn(\"{pair.Key}\", typeof({fullTypeName}))");
+                }
+                else
+                {
+                    changes.Add( $"AddColumn(\"{pair.Key}\", typeof({type.Name}))");
+                }
             }
             else if (value != pair.Value)
             {
-                changes.Add($"ModifyColumn({pair.Key}, {pair.Value.Name})");
+                changes.Add($@"ModifyColumn(""{pair.Key}"", {pair.Value.Name}))");
             }
         }
 
