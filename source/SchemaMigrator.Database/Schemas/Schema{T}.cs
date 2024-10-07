@@ -18,7 +18,12 @@ public class Schema<T> where T : class
         var currentAssembly = Assembly.GetExecutingAssembly();
 
         var migrationTypes = currentAssembly.GetTypes()
-            .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(Migration)))
+            .Where(assemblyType => assemblyType.IsClass && !assemblyType.IsAbstract && assemblyType.IsSubclassOf(typeof(Migration)))
+            .OrderBy(migrationType =>
+            {
+                var className = migrationType.Name;
+                return className.Remove(0, className.IndexOf('_'));
+            })
             .ToArray();
 
         var migrationBuilder = new MigrationBuilder();

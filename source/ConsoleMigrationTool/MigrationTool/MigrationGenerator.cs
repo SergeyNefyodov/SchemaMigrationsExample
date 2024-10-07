@@ -17,7 +17,7 @@ using SchemaMigrator.Database.Schemas;
 using SchemaMigrator.Database.Core.Models;
 
 namespace {_projectName}.Migrations;
-public class {migrationName} : Migration
+public class {migrationName}_{DateTime.Now:yyyyMMdd_hhmm} : Migration
 {{
     public override Dictionary<string, Guid> GuidDictionary {{ get; set; }} = new Dictionary<string, Guid>()
     {{
@@ -118,14 +118,14 @@ public class {migrationName} : Migration
 
         var directories = Directory.GetDirectories(solutionDirectory, "*", SearchOption.AllDirectories);
 
-        foreach (var dir in directories)
+        foreach (var directory in directories)
         {
-            if (Directory.GetFiles(dir, "*.csproj").Any())
+            if (Directory.GetFiles(directory, "*.csproj").Any())
             {
-                var files = Directory.GetFiles(dir, "*.cs", SearchOption.AllDirectories);
-                if (files.Any(f => File.ReadAllText(f).Contains($"public class {className}")))
+                var files = Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories);
+                if (files.Any(file => File.ReadAllText(file).Contains($"public class {className}")))
                 {
-                    return dir;
+                    return directory;
                 }
             }
         }

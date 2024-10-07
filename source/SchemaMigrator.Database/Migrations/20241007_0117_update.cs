@@ -3,7 +3,7 @@ using SchemaMigrator.Database.Schemas;
 using SchemaMigrator.Database.Core.Models;
 
 namespace SchemaMigrator.Database.Migrations;
-public class update : Migration
+public class update_20241007_1003 : Migration
 {
     public override Dictionary<string, Guid> GuidDictionary { get; set; } = new Dictionary<string, Guid>()
     {
