@@ -19,12 +19,15 @@ public class MigrationTool
             var snapshot = snapshots.FirstOrDefault(snapshot => snapshot.SchemaName == schemaName);
             if (snapshot is null || snapshot.Fields.Count == 0)
             {
-                generator.AddInitialMigration(schemaName, pair.Value);
+                generator.AddInitialMigration(schemaName, type);
             }
             else
             {
-                var changes = ChangeDetector.DetectChanges(pair.Value, snapshot.Fields.ToDictionary(field => field.Name, field => field.Type));
-                generator.AddMigration(migrationName, changes, type);
+                var changes = ChangeDetector.DetectChanges(type, schemaName, snapshot.Fields.ToDictionary(field => field.Name, field => field.Type));
+                if (changes.Any())
+                {
+                    generator.AddMigration(schemaName, changes);
+                }
             }
         }
         generator.Finish(migrationName);

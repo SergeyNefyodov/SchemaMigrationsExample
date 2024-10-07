@@ -41,7 +41,7 @@ public class {migrationName} : Migration
         var properties = schemaSetType.GetProperties()
             .ToDictionary(prop => prop.Name, prop => prop.PropertyType);
 
-        _guidsBuilder.Append($@"        {{""{schemaName}"", new Guid(""{Guid.NewGuid()}"") }},
+        _guidsBuilder.Append($@"        {{ ""{schemaName}"", new Guid(""{Guid.NewGuid()}"") }},
 ");
         _upBuilder.Append($@"        migrationBuilder.CreateSchema(new SchemaBuilderData()
         {{
@@ -50,7 +50,7 @@ public class {migrationName} : Migration
             Name = ""{schemaSetType.Name}"",
             VendorId = ""Atomatiq""
         }},
-        new SchemaDescriptor(""{schemaSetType.Name}"")
+        new SchemaDescriptor(""{schemaName}"")
         {{
             Fields = new List<FieldDescriptor>()
             {{
@@ -73,12 +73,16 @@ public class {migrationName} : Migration
 ");
     }
 
-    public void AddMigration(string schemaName, List<string> changes, Type schemaSetType)
+    public void AddMigration(string schemaName, List<string> changes)
     {
-        _guidsBuilder.Append($@"        {{""{schemaName}"", new Guid(""{Guid.NewGuid()}"") }},
+        _guidsBuilder.Append($@"        {{ ""{schemaName}"", new Guid(""{Guid.NewGuid()}"") }},
 ");
-        _upBuilder.AppendLine(
-            $$"""{ "{{string.Join(Environment.NewLine + "                ", changes.Select(change => $"migrationBuilder.{change};"))}}") },""");
+        _upBuilder.Append(
+            $@"        migrationBuilder.UpdateGuid(""{schemaName}"", GuidDictionary[""{schemaName}""]);
+");
+        _upBuilder.Append(
+            $@"{string.Join("\n", changes.Select(change => $"        migrationBuilder.{change};"))}");
+        _upBuilder.AppendLine();
     }
 
     private void SaveFile(string migrationName, string migrationCode)
