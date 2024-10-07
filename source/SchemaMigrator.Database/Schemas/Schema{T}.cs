@@ -52,8 +52,12 @@ public class Schema<T> where T : class
 
         var schema = Schema.Lookup(lastGuidDict[schemaName]);
         if (schema is not null) return schema;
+        if (!lastExistedGuidDict.TryGetValue(schemaName, out _))
+        {
+            return migrationBuilder.Create(schemaName);
+        }
 
-        var schemas = migrationBuilder.Migrate(lastExistedGuidDict);
+        var schemas = migrationBuilder.Migrate(lastExistedGuidDict);  //it wi;; migrate all the schemas
         return schemas.Find(migratedSchema => migratedSchema.SchemaName == schemaName);
     }
 

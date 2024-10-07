@@ -43,11 +43,11 @@ public class {migrationName} : Migration
 
         _guidsBuilder.Append($@"        {{ ""{schemaName}"", new Guid(""{Guid.NewGuid()}"") }},
 ");
-        _upBuilder.Append($@"        migrationBuilder.CreateSchema(new SchemaBuilderData()
+        _upBuilder.Append($@"        migrationBuilder.AddSchemaData(new SchemaBuilderData()
         {{
             Guid = GuidDictionary[""{schemaName}""],
             Documentation = ""Initial schema for {schemaSetType.Name}"",
-            Name = ""{schemaSetType.Name}"",
+            Name = ""{schemaName}"",
             VendorId = ""Atomatiq""
         }},
         new SchemaDescriptor(""{schemaName}"")

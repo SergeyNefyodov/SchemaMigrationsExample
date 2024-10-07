@@ -10,7 +10,7 @@ public class MigrationBuilder
     private List<SchemaDescriptor> _schemas = [];
     private List<SchemaBuilderData> _buildersData = [];
     
-    public void CreateSchema(SchemaBuilderData data, SchemaDescriptor descriptor)
+    public void AddSchemaData(SchemaBuilderData data, SchemaDescriptor descriptor)
     {
         _buildersData.Add(data);
         _schemas.Add(descriptor);
@@ -37,42 +37,7 @@ public class MigrationBuilder
         foreach (var guidPair in lastExistedGuids)
         {
             var existingSchema = Schema.Lookup(guidPair.Value);
-            var data = _buildersData.First(data => data.Name == guidPair.Key);
-            var schemaDescriptor = _schemas.First(schema => schema.SchemaName == guidPair.Key);
-        
-            var builder = new SchemaBuilder(data.Guid)
-                .SetSchemaName(data.Name)
-                .SetDocumentation(data.Documentation)
-                .SetVendorId(data.VendorId);
-        
-            foreach (var field in schemaDescriptor.Fields)
-            {
-                var propertyType = field.Type;
-
-                if (propertyType.IsGenericType)
-                {
-                    var genericTypeDefinition = propertyType.GetGenericTypeDefinition();
-
-                    if (genericTypeDefinition == typeof(List<>))
-                    {
-                        var elementType = propertyType.GetGenericArguments()[0]; 
-                        builder.AddArrayField(field.Name, elementType);
-                    }
-                    else if (genericTypeDefinition == typeof(Dictionary<,>))
-                    {
-                        var genericArgs = propertyType.GetGenericArguments();
-                        var keyType = genericArgs[0];   
-                        var valueType = genericArgs[1]; 
-                        builder.AddMapField(field.Name, keyType, valueType);
-                    }
-                }
-                else
-                {
-                    builder.AddSimpleField(field.Name, propertyType);
-                }
-            }
-
-            var resultSchema = builder.Finish();
+            var resultSchema = Create(guidPair.Key);
             if (existingSchema is not null && SchemaUtils.HasElements(existingSchema, Context.ActiveDocument!))
             {
                 EntityMigrator.Migrate(existingSchema, resultSchema);
@@ -80,6 +45,47 @@ public class MigrationBuilder
             result.Add(resultSchema);
         }
         return result;
+    }
+
+    public Schema Create(string schemaName)
+    {
+        var data = _buildersData.First(data => data.Name == schemaName);
+        var schemaDescriptor = _schemas.First(schema => schema.SchemaName == schemaName);
+        
+        var builder = new SchemaBuilder(data.Guid)
+            .SetSchemaName(data.Name)
+            .SetDocumentation(data.Documentation)
+            .SetVendorId(data.VendorId);
+        
+        foreach (var field in schemaDescriptor.Fields)
+        {
+            var propertyType = field.Type;
+
+            if (propertyType.IsGenericType)
+            {
+                var genericTypeDefinition = propertyType.GetGenericTypeDefinition();
+
+                if (genericTypeDefinition == typeof(List<>))
+                {
+                    var elementType = propertyType.GetGenericArguments()[0]; 
+                    builder.AddArrayField(field.Name, elementType);
+                }
+                else if (genericTypeDefinition == typeof(Dictionary<,>))
+                {
+                    var genericArgs = propertyType.GetGenericArguments();
+                    var keyType = genericArgs[0];   
+                    var valueType = genericArgs[1]; 
+                    builder.AddMapField(field.Name, keyType, valueType);
+                }
+            }
+            else
+            {
+                builder.AddSimpleField(field.Name, propertyType);
+            }
+        }
+
+        var resultSchema = builder.Finish();
+        return resultSchema;
     }
 
     public List<FieldDescriptor> GetColumns(string tableName)
