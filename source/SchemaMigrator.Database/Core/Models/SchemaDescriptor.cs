@@ -1,8 +1,8 @@
 namespace SchemaMigrator.Database.Core.Models;
 
-public class SchemaDescriptor
+public class SchemaDescriptor(string schemaName)
 {
-    public required string SchemaName { get; set; } = null!;
+    public string SchemaName { get; set; } = schemaName;
     public List<FieldDescriptor> Fields { get; set; } = [];
 
     public void AddField(FieldDescriptor field)
