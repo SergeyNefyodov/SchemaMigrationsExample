@@ -1,4 +1,6 @@
-﻿namespace ConsoleMigrationTool
+﻿using System.Windows;
+
+namespace ConsoleMigrationTool
 {
     internal class Program
     {
@@ -39,6 +41,7 @@
             }
             catch (Exception e)
             {
+                MessageBox.Show(e.StackTrace);
                 Console.WriteLine(e);
             }
         }

@@ -17,13 +17,15 @@ public static class EntitySeeder
         foreach (var instance in instances)
         {
             var connection = new DatabaseConnection<Person>(instance);
-            var person = new Person
-            {
-                Id = faker.Random.Int(1, 1000),
-                Name = faker.Person.FirstName,
-                Surname = faker.Person.LastName,
-                Occupation = "Software development",
-            };
+            var person = connection.LoadObject();
+            //var person = new Person
+            // {
+            //     Id = faker.Random.Int(1, 1000),
+            //     Name = faker.Person.FirstName,
+            //     Surname = faker.Person.LastName,
+            //     Occupation = "Software development",
+            // };
+            person.Occupation = "Software development";
             person.Scores.Add("Score", 1);
             person.Hobbies.Add("Hobbyhorsing");
             connection.SaveObject(person);

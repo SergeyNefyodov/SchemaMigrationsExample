@@ -90,6 +90,7 @@ public class MigrationBuilder
 
     public List<FieldDescriptor> GetColumns(string tableName)
     {
-        return _schemas.First(schema => schema.SchemaName == tableName).Fields;
+        var schema = _schemas.FirstOrDefault(schema => schema.SchemaName == tableName);
+        return schema is null ? new List<FieldDescriptor>() : schema.Fields;
     }
 }

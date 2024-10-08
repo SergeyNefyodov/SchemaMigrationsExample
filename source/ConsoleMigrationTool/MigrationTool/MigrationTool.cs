@@ -40,7 +40,11 @@ public class MigrationTool
         if (!migrationTypes.Any()) return fields;
 
         // Assuming migrations are named like "20241003_1009_MigrationName" 
-        var lastMigrationType = migrationTypes.OrderByDescending(t => t.Name).FirstOrDefault(); // TODO: add sorting by filename
+        var lastMigrationType = migrationTypes.OrderBy(migrationType =>
+        {
+            var className = migrationType.Name;
+            return className.Remove(0, className.IndexOf('_'));
+        }).FirstOrDefault();
 
         if (lastMigrationType == null) return fields;
 
