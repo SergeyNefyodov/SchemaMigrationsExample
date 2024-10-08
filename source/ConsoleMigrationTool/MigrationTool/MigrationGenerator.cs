@@ -25,12 +25,7 @@ public class {migrationName}_{DateTime.Now:yyyyMMdd_hhmm} : Migration
 
     public override void Up(MigrationBuilder migrationBuilder)
     {{
-{_upBuilder}    }}
-
-    public override void Down()
-    {{
-        throw new NotSupportedException();
-    }}
+{_upBuilder}    }}    
 }}";
 
         SaveFile(migrationName, migrationCode);

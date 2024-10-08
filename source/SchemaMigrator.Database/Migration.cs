@@ -5,5 +5,4 @@ public abstract class Migration
     public abstract Dictionary<string, Guid> GuidDictionary { get; set; }
 
     public abstract void Up(MigrationBuilder migrationBuilder);
-    public abstract void Down();
 }
