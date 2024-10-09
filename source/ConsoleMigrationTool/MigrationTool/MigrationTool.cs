@@ -1,17 +1,32 @@
-using SchemaMigrator.Database;
-using SchemaMigrator.Database.Core.Models;
+using System.Reflection;
+using ConsoleMigrationTool.Models;
 
 namespace ConsoleMigrationTool.MigrationTool;
 
 public class MigrationTool
 {
-    public static void AddMigration(string migrationName)
+    public static void AddMigration(string migrationName, string projectName)
     {
-        var types = FindModelTypes();
+        Console.WriteLine(projectName);
+        var solutionDirectory = PathUtils.GetSolutionDirectory(Assembly.GetEntryAssembly());
+        Console.WriteLine(solutionDirectory);
+        var dllPath = string.Empty;
+        foreach (var dir in Directory.GetDirectories(solutionDirectory, $"*{projectName}*", searchOption: SearchOption.AllDirectories))
+        {
+            dllPath = Directory.GetFiles(dir, $"{projectName}.dll", SearchOption.AllDirectories)[0];
+            break;
+        }
+        //
+        //Console.WriteLine(dllPath);
+        
+        
+        
+        var assembly = Assembly.LoadFile(dllPath);
+        var types = FindModelTypes(projectName, assembly);
         if (types.Count == 0) return;
-        var snapshots = GetLastMigrationsSnapshot(types.Keys.ToArray());
+        var snapshots = GetLastMigrationsSnapshot(types.Keys.ToArray(), assembly);
         var generator = new MigrationGenerator(types.Values.ElementAt(0));
-        for (var i =0; i<types.Count; i++)
+        for (var i = 0; i < types.Count; i++)
         {
             var pair = types.ElementAt(i);
             var schemaName = pair.Key;
@@ -30,61 +45,70 @@ public class MigrationTool
                 }
             }
         }
+
         generator.Finish(migrationName);
     }
 
-    private static List<SchemaDescriptor> GetLastMigrationsSnapshot(string[] schemaNames)
+    private static List<SchemaDescriptor> GetLastMigrationsSnapshot(string[] schemaNames, Assembly assembly)
     {
-        var fields = new List<SchemaDescriptor>();
-        var migrationTypes = GetMigrationTypes();
-        if (!migrationTypes.Any()) return fields;
-
-        // Assuming migrations are named like "20241003_1009_MigrationName" 
-        var lastMigrationType = migrationTypes.OrderBy(migrationType =>
+        var schemas = new List<SchemaDescriptor>();
+        var migrationTypes = GetMigrationTypes(assembly);
+        if (!migrationTypes.Any()) return schemas;
+        var migrationBuilderType = assembly.GetTypes().First(type => type.Name == "MigrationBuilder");
+        var migrationBuilder = Activator.CreateInstance(migrationBuilderType);
+        foreach (var migrationType in migrationTypes)
         {
-            var className = migrationType.Name;
-            return className.Remove(0, className.IndexOf('_'));
-        }).FirstOrDefault();
-
-        if (lastMigrationType == null) return fields;
-
-        var migrationInstance = (Migration)Activator.CreateInstance(lastMigrationType);
-        var migrationBuilder = new MigrationBuilder();
-
-        migrationInstance.Up(migrationBuilder);
-        foreach (var name in schemaNames)
-        {
-            var schemaDescriptor = new SchemaDescriptor(name)
+            var migrationInstance = Activator.CreateInstance(migrationType);
+            var method = migrationType.GetMethod("Up");
+            method!.Invoke(migrationInstance, [migrationBuilder]);
+            foreach (var name in schemaNames)
             {
-                Fields = migrationBuilder.GetColumns(name)
-            };
-            fields.Add(schemaDescriptor);
+                var getColumnsMethod = migrationBuilderType.GetMethod("GetColumns");
+                var schemaDescriptor = new SchemaDescriptor(name)
+                {
+                    Fields = (List<FieldDescriptor>)getColumnsMethod!.Invoke(migrationBuilder, [name])
+                };
+                schemas.Add(schemaDescriptor);
+            }
         }
 
-        return fields;
+        return schemas;
     }
 
-    private static Type[] GetMigrationTypes()
+    private static Type[] GetMigrationTypes(Assembly assembly)
     {
-        var migrationTypes =  typeof(SchemaContext).Assembly.GetTypes()
-            .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(Migration)))
+        var migrationTypes = assembly.GetTypes()
+            .Where(type => type.IsClass && !type.IsAbstract && type.Name.EndsWith("Migration"))
+            .OrderBy(migrationType =>
+            {
+                var className = migrationType.Name;
+                return className.Remove(0, className.IndexOf('_'));
+            })
             .ToArray();
 
         return migrationTypes;
     }
-    
-    private static Dictionary<string, Type> FindModelTypes()
+
+    private static Dictionary<string, Type> FindModelTypes(string projectName, Assembly assembly)
     {
-        var types = new Dictionary<string, Type>();
-        var contextType = typeof(SchemaContext);
+        var type = assembly.GetType($"{projectName}.Database.ApplicationSchemaContext");
+        // var types = assembly.GetTypes().Where(type => type.Name.EndsWith("SchemaContext")).ToArray();
+        // if (types.Count() != 1)
+        // {
+        //     throw new ArgumentException("Project must contain exactly one SchemaContext.");
+        // }
+
+        var typesDictionary = new Dictionary<string, Type>();
+        var contextType = type;
         var propertyInfos = contextType
             .GetProperties()
-            .Where(property => property.PropertyType.GetGenericTypeDefinition() == typeof(SchemaSet<>));
+            .Where(property => property.PropertyType.GetGenericTypeDefinition().Name.StartsWith("SchemaSet"));
 
         foreach (var propertyInfo in propertyInfos)
         {
-            types.Add(propertyInfo.Name, propertyInfo.PropertyType.GetGenericArguments()[0]);
+            typesDictionary.Add(propertyInfo.Name, propertyInfo.PropertyType.GetGenericArguments()[0]);
         }
-        return types;
+
+        return typesDictionary;
     }
 }

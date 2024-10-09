@@ -1,4 +1,4 @@
-﻿using System.Windows;
+﻿using System.Reflection;
 
 namespace ConsoleMigrationTool
 {
@@ -6,18 +6,21 @@ namespace ConsoleMigrationTool
     {
         public static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
             try
             {
-                args = Console.ReadLine().Split(' ');
+                //args = Console.ReadLine().Split(' ');
+                var currentDirectory = Directory.GetCurrentDirectory();
+                var currentDirectory1 = Environment.CurrentDirectory;
 
-
-                if (args.Length < 2)
+                if (args.Length < 3)
                 {
                     Console.WriteLine("Please specify a command and a project. Available commands: add <MigrationName>");
                     return;
                 }
 
                 var command = args[0].ToLower();
+                var projectName = args[2];
 
                 switch (command)
                 {
@@ -31,7 +34,7 @@ namespace ConsoleMigrationTool
                         var migrationName = args[1];
                         Console.WriteLine($"Adding migration: {migrationName}");
 
-                        MigrationTool.MigrationTool.AddMigration(migrationName);
+                        MigrationTool.MigrationTool.AddMigration(migrationName, projectName);
                         break;
 
                     default:
@@ -41,9 +44,23 @@ namespace ConsoleMigrationTool
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.StackTrace);
-                Console.WriteLine(e);
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
             }
+        }
+        
+        private static Assembly ResolveAssembly(object sender, ResolveEventArgs args)
+        {
+            var assemblyName = new AssemblyName(args.Name);
+
+            var assemblyPath = Path.Combine(Directory.GetParent(args.RequestingAssembly.Location)!.FullName, assemblyName.Name + ".dll");
+            Console.WriteLine($"Loading assembly: {assemblyPath}");
+            if (File.Exists(assemblyPath))
+            {
+                return Assembly.LoadFrom(assemblyPath);
+            }
+
+            return null;
         }
     }
 }
