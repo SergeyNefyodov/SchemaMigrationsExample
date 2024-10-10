@@ -1,0 +1,11 @@
+﻿<RevitAddIns>
+    <AddIn Type="Application">
+        <Name>SchemaMigrationsExample.Application</Name>
+        <Assembly>SchemaMigrationsExample.Application/SchemaMigrationsExample.Application.dll</Assembly>
+        <AddInId>1BA41869-7C7E-493F-9FD1-70B42D4D7D6D</AddInId>
+        <FullClassName>SchemaMigrationsExample.Application.Application</FullClassName>
+        <VendorId>Development</VendorId>
+        <VendorDescription></VendorDescription>
+        <VendorEmail></VendorEmail>
+    </AddIn>
+</RevitAddIns>
