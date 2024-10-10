@@ -1,4 +1,4 @@
-using SchemaMigrator.Database;
+using SchemaMigrations.Abstractions;
 using SchemaMigrator.Database.Models;
 
 namespace SchemaMigrator.EntityCreator.Database;

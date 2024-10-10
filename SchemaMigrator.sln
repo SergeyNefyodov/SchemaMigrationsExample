@@ -16,8 +16,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaMigrator.Application"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaMigrator.EntityCreator", "source\SchemaMigrator.EntityCreator\SchemaMigrator.EntityCreator.csproj", "{3AAD29B2-7DA6-4661-B741-A2A8BF729795}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleMigrationTool", "source\ConsoleMigrationTool\ConsoleMigrationTool.csproj", "{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug R20|Any CPU = Debug R20|Any CPU
@@ -125,35 +123,5 @@ Global
 		{3AAD29B2-7DA6-4661-B741-A2A8BF729795}.Migration Release R23|Any CPU.ActiveCfg = Release R23|Any CPU
 		{3AAD29B2-7DA6-4661-B741-A2A8BF729795}.Installer|Any CPU.ActiveCfg = Debug R23|Any CPU
 		{3AAD29B2-7DA6-4661-B741-A2A8BF729795}.Installer|Any CPU.Build.0 = Debug R23|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Debug R20|Any CPU.ActiveCfg = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Debug R20|Any CPU.Build.0 = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Debug R21|Any CPU.ActiveCfg = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Debug R21|Any CPU.Build.0 = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Debug R22|Any CPU.ActiveCfg = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Debug R22|Any CPU.Build.0 = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Debug R23|Any CPU.ActiveCfg = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Debug R23|Any CPU.Build.0 = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Debug R24|Any CPU.ActiveCfg = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Debug R24|Any CPU.Build.0 = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Debug R25|Any CPU.ActiveCfg = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Debug R25|Any CPU.Build.0 = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Release R20|Any CPU.ActiveCfg = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Release R20|Any CPU.Build.0 = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Release R21|Any CPU.ActiveCfg = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Release R21|Any CPU.Build.0 = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Release R22|Any CPU.ActiveCfg = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Release R22|Any CPU.Build.0 = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Release R23|Any CPU.ActiveCfg = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Release R23|Any CPU.Build.0 = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Release R24|Any CPU.ActiveCfg = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Release R24|Any CPU.Build.0 = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Release R25|Any CPU.ActiveCfg = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Release R25|Any CPU.Build.0 = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Installer|Any CPU.ActiveCfg = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Installer|Any CPU.Build.0 = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Migration Debug R23|Any CPU.ActiveCfg = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Migration Debug R23|Any CPU.Build.0 = Debug|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Migration Release R23|Any CPU.ActiveCfg = Release|Any CPU
-		{B13B0E9E-5130-4EFE-9F95-D9A1E83A0B14}.Migration Release R23|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
