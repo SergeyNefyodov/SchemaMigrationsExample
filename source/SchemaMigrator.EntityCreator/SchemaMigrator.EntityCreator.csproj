@@ -52,8 +52,8 @@
       <Reference Include="SchemaMigrations.Abstractions">
         <HintPath>..\..\..\ConsoleApp2\SchemaMigrations.Abstractions\bin\Debug\SchemaMigrations.Abstractions.dll</HintPath>
       </Reference>
-      <Reference Include="SchemaMigrator.Database">
-        <HintPath>..\..\..\ConsoleApp2\SchemaMigrator.Database\bin\Debug R23\SchemaMigrator.Database.dll</HintPath>
+      <Reference Include="SchemaMigrations.Database">
+        <HintPath>..\..\..\ConsoleApp2\SchemaMigrations.Database\bin\Debug R23\SchemaMigrations.Database.dll</HintPath>
       </Reference>
     </ItemGroup>
 

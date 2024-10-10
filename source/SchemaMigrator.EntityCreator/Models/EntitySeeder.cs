@@ -1,6 +1,5 @@
 using Bogus;
-using SchemaMigrator.Database;
-using SchemaMigrator.Database.Enums;
+using SchemaMigrations.Database;
 using SchemaMigrator.Database.Models;
 using Person = SchemaMigrator.Database.Models.Person;
 
@@ -8,7 +7,7 @@ namespace SchemaMigrator.EntityCreator.Models;
 
 public static class EntitySeeder
 {
-    public static void Seed(EntryKey entryKey)
+    public static void Seed()
     {
         var instances = Context.ActiveDocument.EnumerateInstances<FamilyInstance>().ToArray();
         using var transaction = new Transaction(Context.ActiveDocument, "Seeding database");

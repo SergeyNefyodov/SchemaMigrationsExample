@@ -1,5 +1,4 @@
-﻿using SchemaMigrator.Database;
-using SchemaMigrator.Database.Enums;
+﻿using SchemaMigrations.Database;
 using SchemaMigrator.Database.Models;
 using SchemaMigrator.EntityCreator.Models;
 
@@ -10,13 +9,7 @@ public sealed partial class EntityCreatorViewModel : ObservableObject
     [RelayCommand]
     private void SeedSchema()
     {
-        EntitySeeder.Seed(EntryKey.DefaultSchema);
-    }
-
-    [RelayCommand]
-    private void MigrateSchema()
-    {
-        EntitySeeder.Seed(EntryKey.MigratedSchema);
+        EntitySeeder.Seed();
     }
     
     [RelayCommand]

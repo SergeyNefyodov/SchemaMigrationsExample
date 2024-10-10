@@ -19,10 +19,6 @@
             Margin="5"
             Content="Seed default schema"/>
         <Button
-            Command="{Binding MigrateSchemaCommand}"
-            Margin="5"
-            Content="Migrate schema"/>
-        <Button
             Command="{Binding ReadDataCommand}"
             Margin="5"
             Content="Read data"/>
