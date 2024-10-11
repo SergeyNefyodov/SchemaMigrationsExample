@@ -1,5 +1,5 @@
 using SchemaMigrations.Database;
-using Person = SchemaMigrationsExample.EntityCreator.Database.Models.Person;
+using SchemaMigrationsExample.EntityCreator.Database.Models;
 
 namespace SchemaMigrationsExample.EntityCreator.Models;
 

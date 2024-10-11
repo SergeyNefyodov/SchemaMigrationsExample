@@ -22,9 +22,5 @@
             Command="{Binding ReadDataCommand}"
             Margin="5"
             Content="Read data"/>
-        <Button
-            Command="{Binding DeleteSchemasCommand}"
-            Margin="5"
-            Content="Delete schemas"/>
     </StackPanel>
 </Window>

@@ -1,7 +1,7 @@
 using SchemaMigrations.Abstractions;
 using SchemaMigrationsExample.EntityCreator.Database.Models;
 
-namespace SchemaMigrationsExample.EntityCreator.Database;
+namespace SchemaMigrationsExample.Database;
 
 public class ApplicationSchemaContext : SchemaContext
 {
