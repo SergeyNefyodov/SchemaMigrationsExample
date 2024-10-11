@@ -1,10 +1,10 @@
 using SchemaMigrations.Abstractions;
-using SchemaMigrator.Database.Models;
+using SchemaMigrationsExample.EntityCreator.Database.Models;
 
 namespace SchemaMigrationsExample.EntityCreator.Database;
 
 public class ApplicationSchemaContext : SchemaContext
 {
     public SchemaSet<Person> Persons { get; set; } = [];
-    public SchemaSet<Toy> Toys { get; set; } = [];
+    //public SchemaSet<Instrument> Instruments { get; set; } = [];
 }

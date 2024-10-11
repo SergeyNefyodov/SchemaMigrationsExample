@@ -42,15 +42,16 @@
         <PackageReference Include="Nice3point.Revit.Api.RevitAPI" Version="$(RevitVersion).*"/>
         <PackageReference Include="Nice3point.Revit.Api.RevitAPIUI" Version="$(RevitVersion).*"/>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.*"/>
+        <PackageReference Include="SchemaMigrations.Database" Version="$(RevitVersion).*" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Reference Include="SchemaMigrations.Abstractions">
-        <HintPath>..\..\..\ConsoleApp2\SchemaMigrations.Abstractions\bin\Debug\SchemaMigrations.Abstractions.dll</HintPath>
-      </Reference>
-      <Reference Include="SchemaMigrations.Database">
-        <HintPath>..\..\..\ConsoleApp2\SchemaMigrations.Database\bin\Debug R23\SchemaMigrations.Database.dll</HintPath>
-      </Reference>
-    </ItemGroup>
+<!--    <ItemGroup>-->
+<!--      <Reference Include="SchemaMigrations.Abstractions">-->
+<!--        <HintPath>..\..\..\ConsoleApp2\SchemaMigrations.Abstractions\bin\Debug\SchemaMigrations.Abstractions.dll</HintPath>-->
+<!--      </Reference>-->
+<!--      <Reference Include="SchemaMigrations.Database">-->
+<!--        <HintPath>..\..\..\ConsoleApp2\SchemaMigrations.Database\bin\Debug R23\SchemaMigrations.Database.dll</HintPath>-->
+<!--      </Reference>-->
+<!--    </ItemGroup>-->
 
 </Project>

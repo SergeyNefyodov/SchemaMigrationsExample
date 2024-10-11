@@ -1,7 +1,5 @@
-using Bogus;
 using SchemaMigrations.Database;
-using SchemaMigrator.Database.Models;
-using Person = SchemaMigrator.Database.Models.Person;
+using Person = SchemaMigrationsExample.EntityCreator.Database.Models.Person;
 
 namespace SchemaMigrationsExample.EntityCreator.Models;
 
@@ -10,33 +8,36 @@ public static class EntitySeeder
     public static void Seed()
     {
         var instances = Context.ActiveDocument.EnumerateInstances<FamilyInstance>().ToArray();
-        using var transaction = new Transaction(Context.ActiveDocument, "Seeding database");
+        Element instance = null;
+        using var transaction = new Transaction(instance.Document, "Seeding database");
         transaction.Start();
-        var faker = new Faker();
-        foreach (var instance in instances)
+        
+        var connection = new DatabaseConnection<Person>(instance);
+        var person = new Person
         {
-            var connection = new DatabaseConnection<Person>(instance);
-            var person = connection.LoadObject();
-            //var person = new Person
-            // {
-            //     Id = faker.Random.Int(1, 1000),
-            //     Name = faker.Person.FirstName,
-            //     Surname = faker.Person.LastName,
-            //     Occupation = "Software development",
-            // };
-            person.Occupation = "Software development";
-            person.Scores.Add("Score", 1);
-            person.Hobbies.Add("Hobbyhorsing");
-            connection.SaveObject(person);
-
-            var toyConnection = new DatabaseConnection<Toy>(instance);
-            var toy = new Toy()
+            Id = 69,
+            Name = "Branimir",
+            Surname = "Petrović",
+            //Occupation = "Software development",
+            Scores = new Dictionary<string, int>
             {
-                Name = faker.Person.FirstName,
-                Type = faker.Database.Type()
-            };
-            toyConnection.SaveObject(toy);
-        }
+                { "Scores", 1 }
+            },
+            Hobbies = ["Sports"]
+        };
+        connection.SaveObject(person);
+
+        transaction.Commit();
+
+        var existedPerson = connection.LoadObject();
+
+        // var toyConnection = new DatabaseConnection<Toy>(instance);
+        // var toy = new Toy()
+        // {
+        //     Name = faker.Person.FirstName,
+        //     Type = faker.Database.Type()
+        // };
+        // toyConnection.SaveObject(toy);
 
         transaction.Commit();
     }

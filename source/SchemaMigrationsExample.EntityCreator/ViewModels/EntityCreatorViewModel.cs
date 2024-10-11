@@ -1,6 +1,7 @@
-﻿using SchemaMigrations.Database;
+﻿using Autodesk.Revit.UI;
+using SchemaMigrations.Database;
+using SchemaMigrationsExample.EntityCreator.Database.Models;
 using SchemaMigrationsExample.EntityCreator.Models;
-using SchemaMigrator.Database.Models;
 
 namespace SchemaMigrationsExample.EntityCreator.ViewModels;
 
@@ -13,17 +14,11 @@ public sealed partial class EntityCreatorViewModel : ObservableObject
     }
     
     [RelayCommand]
-    private void DeleteSchemas()
-    {
-        var connection = new DatabaseConnection<Person>(null);
-        connection.Delete();
-    }
-    
-    [RelayCommand]
     private void ReadData()
     {
         var element = Context.ActiveDocument.EnumerateInstances<FamilyInstance>().First();
         var connection = new DatabaseConnection<Person>(element);
         var person = connection.LoadObject();
+        TaskDialog.Show("Read Data", person.ToString());
     }
 }
